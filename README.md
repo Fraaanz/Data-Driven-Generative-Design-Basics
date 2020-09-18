@@ -2,7 +2,7 @@
 ## Version 0.1
 Here you will find code example and informations how to get started with ThreeJS and some basics on Generative Data Visualization with CSV data sources.
 
-*CSV data exaples are still in progress*
+*CSV data exaples are still in progress* 🚧
 
 This demo project is designed to run on a local server.
 

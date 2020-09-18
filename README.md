@@ -1,4 +1,4 @@
-# 📊 Data Driven Generative Design with ThreeJS – Basic setup and demo
+# Data Driven Generative Design with ThreeJS – Basic setup and demo
 ## Version 0.1
 Here you will find code example and informations how to get started with ThreeJS and some basics on Generative Data Visualization with CSV data sources.
 

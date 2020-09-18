@@ -1,163 +1,199 @@
-/* 📀 LOAD THREE JS -------------------------- */
+// 📀 LOAD THREE JS -------------------------- 
 
 import * as THREE from '../sources/three.module.js';
 
-/* 📊 LOAD CSV DATA -------------------------- */
+// 🌐 GLOBAL VARIABLES -------------------------- 
 
-d3.csv("../sources/demo-data/SRLCC_a1b_Temp_ECHAM5-MPI.csv").then(function (data) {
+var camera, scene, renderer;
+var onPointerDownPointerX, onPointerDownPointerY, onPointerDownLon, onPointerDownLat;
+var lon = 0, lat = 0;
+var phi = 0, theta = 0;
 
-  /* 🌐 GLOBAL VARIABLES -------------------------- */
+// 🌐 GROUPS SETTING -------------------------- 
 
-  var camera, scene, renderer;
-  var geometry, material, mesh, light;
-  var groupRed, groupHelper;
-  var onPointerDownPointerX, onPointerDownPointerY, onPointerDownLon, onPointerDownLat;
-  var lon = 0, lat = 0;
-  var phi = 0, theta = 0;
+var groupCube = new THREE.Group();
 
-  /* 🌐 GROUPS SETTING -------------------------- */
+// 🚀 RUN MAIN FUNCTIONS -------------------------- 
 
-  var groupHelper = new THREE.Group();
-  var groupCube = new THREE.Group();
+init();
+animate();
 
-  /* 🚀 RUN MAIN FUNCTIONS -------------------------- */
+// 🎯 MAIN FUNCTION -------------------------- 
 
-  init();
-  animate();
+function init() {
 
-  /* 🎯 MAIN FUNCTION -------------------------- */
+  // 🎥 CAM SETTING -------------------------- 
 
-  function init() {
+  camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 110);
+  camera.position.z = 5;
 
-    /* 🎥 CAM SETTING -------------------------- */
+  // 🌇 SCENE SETTING -------------------------- 
 
-    camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 110);
-    camera.position.z = 5;
+  scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xFFFFFF);
 
-    /* 🌇 SCENE SETTING -------------------------- */
+  // 🔶 HELPER CUBES ✅ ----------------------- 
 
-    scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xefefef);
+  helper();
 
-    /* 👇 YOUR 3D OBJECTS ✅ ----------------------- */
+  // 👇 YOUR 3D OBJECTS ✅ ----------------------- 
 
-      geometry = new THREE.BoxGeometry(1,1,1);
+  // 👇 FIRST 3D CUBE
 
-      material = new THREE.MeshPhysicalMaterial({
-        color: "#3f4f5f",
-        reflectivity: 0.1,
-        refractionRatio: 2,
-        roughness: 0,
-        metalness: 0.5,
-        clearcoat: 1,
-        clearcoatRoughness: 0,
-        transmission: 0,
-        opacity: 1,
-        transparent: true
-      });
+  var geometry, material, mesh;
+  geometry = new THREE.BoxGeometry(1, 1, 1);
+  material = new THREE.MeshPhysicalMaterial({
+    color: "#AAAAAA",
+    reflectivity: 1,
+    refractionRatio: 1,
+    roughness: 0,
+    metalness: 0,
+    clearcoat: 1,
+    clearcoatRoughness: 0,
+    transmission: 0,
+    opacity: 1,
+    transparent: true
+  });
+  mesh = new THREE.Mesh(geometry, material);
+  mesh.position.x = 5;
+  mesh.position.y = 0;
+  mesh.position.z = 0;
+  groupCube.add(mesh);
 
-      mesh = new THREE.Mesh(geometry, material);
-      mesh.position.x = 0;
-      mesh.position.y = 0;
-      mesh.position.z = 0;
+  // 👇 SECOND 3D CUBE
 
-      groupCube.add(mesh);
+  var geometry, material, mesh;
+  geometry = new THREE.BoxGeometry(3, 3, 3);
+  material = new THREE.MeshPhysicalMaterial({
+    color: "#AAAAAA",
+    reflectivity: 1,
+    refractionRatio: 1,
+    roughness: 0,
+    metalness: 0,
+    clearcoat: 1,
+    clearcoatRoughness: 0,
+    transmission: 0,
+    opacity: 1,
+    transparent: true
+  });
+  mesh = new THREE.Mesh(geometry, material);
+  mesh.position.x = 0;
+  mesh.position.y = 0;
+  mesh.position.z = 0;
+  groupCube.add(mesh);
 
-    /* 🌞 LIGHT SETTINGS -------------------------- */
+  // 🌞 LIGHT SETTINGS -------------------------- 
 
-    light = new THREE.SpotLight(0xfefefe, 4);
-    light.position.set(-50, 50, 50);
-    light.castShadow = true;
-    light.shadow.bias = -0.0001;
-    light.shadow.mapSize.width = 1024 * 4;
-    light.shadow.mapSize.height = 1024 * 4;
+  var lightA;
+  lightA = new THREE.SpotLight(0xFFFFAA, 1);
+  lightA.position.set(-15, 15, 15);
 
-    //* 👉 🌇 MAKE IT VISIBLE -------------------------- */
+  var lightB;
+  lightB = new THREE.SpotLight(0xAAFFFF, 1);
+  lightB.position.set(15, -15, 15);
 
-    scene.add(groupCube, light);
+  // 👉 🌇 MAKE IT VISIBLE -------------------------- 
 
-    //* 🎛 RENDER SETTINGS -------------------------- */
+  scene.add(groupCube, lightA, lightB);
 
-    renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setPixelRatio(window.devicePixelRatio / 1);
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.toneMapping = THREE.ReinhardToneMapping;
-    renderer.toneMappingExposure = 2.3;
-    renderer.shadowMap.enabled = true;
-    document.body.appendChild(renderer.domElement);
+  // 🎛 RENDER SETTINGS -------------------------- 
 
-    //* 🐭 PART OF MOUSE CONTOLL -------------------------- */
+  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer.setPixelRatio(window.devicePixelRatio / 1);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.toneMapping = THREE.ReinhardToneMapping;
+  renderer.toneMappingExposure = 2.3;
+  renderer.shadowMap.enabled = true;
+  document.body.appendChild(renderer.domElement);
 
-    document.addEventListener('mousedown', onDocumentMouseDown, true);
-    document.addEventListener('wheel', onDocumentMouseWheel, false);
+  // 🐭 PART OF MOUSE CONTOLL -------------------------- 
 
-  }
+  document.addEventListener('mousedown', onDocumentMouseDown, true);
+  document.addEventListener('wheel', onDocumentMouseWheel, false);
 
-  //* 🔄 ANIMATION SETTINGS -------------------------- */
+}
 
-  function animate() {
-    requestAnimationFrame(animate);
+// 🔄 ANIMATION SETTINGS -------------------------- 
 
-    var timer = Date.now() * 0.0001;
-    scene.traverse(function (object) {
-      if (camera.name === "thecam") {
-        object.rotation.x = timer * 0.65;
-        object.rotation.y = timer * -1.5;
-        object.rotation.z = timer * 1.5;
-      }
-    });
+function animate() {
+  requestAnimationFrame(animate);
 
-    groupCube.rotation.x += 0.01;
-    groupCube.rotation.y += 0.02;
+  // CUBE
+  groupCube.rotation.x += 0.01;
+  groupCube.rotation.y += 0.02;
 
-    light.position.x = Math.sin(timer * 10.7) * 500;
-    light.position.y = Math.cos(timer * 10.3) * 500;
-    light.position.z = Math.cos(timer * 10.3) * 500;
+  // MOUSE 
+  lon += .15;
+  lat = Math.max(- 85, Math.min(85, lat));
+  phi = THREE.MathUtils.degToRad(90 - lat);
+  theta = THREE.MathUtils.degToRad(lon);
+  camera.position.x = 10 * Math.sin(phi) * Math.cos(theta);
+  camera.position.y = 10 * Math.cos(phi);
+  camera.position.z = 10 * Math.sin(phi) * Math.sin(theta);
+  camera.lookAt(scene.position);
 
-    lon += .15;
-    lat = Math.max(- 85, Math.min(85, lat));
-    phi = THREE.MathUtils.degToRad(90 - lat);
-    theta = THREE.MathUtils.degToRad(lon);
-    camera.position.x = 10 * Math.sin(phi) * Math.cos(theta);
-    camera.position.y = 10 * Math.cos(phi);
-    camera.position.z = 10 * Math.sin(phi) * Math.sin(theta);
-    camera.lookAt(scene.position);
+  renderer.render(scene, camera);
+}
 
-    renderer.render(scene, camera);
-  }
+// 🐭 PART OF MOUSE CONTOLL -------------------------- 
 
-  //* 🐭 PART OF MOUSE CONTOLL -------------------------- */
+function onDocumentMouseDown(event) {
+  event.preventDefault();
+  onPointerDownPointerX = event.clientX;
+  onPointerDownPointerY = event.clientY;
+  onPointerDownLon = lon;
+  onPointerDownLat = lat;
+  document.addEventListener('mousemove', onDocumentMouseMove, false);
+  document.addEventListener('mouseup', onDocumentMouseUp, false);
+}
 
-  function onDocumentMouseDown(event) {
-    event.preventDefault();
-    onPointerDownPointerX = event.clientX;
-    onPointerDownPointerY = event.clientY;
-    onPointerDownLon = lon;
-    onPointerDownLat = lat;
-    document.addEventListener('mousemove', onDocumentMouseMove, false);
-    document.addEventListener('mouseup', onDocumentMouseUp, false);
-  }
+// 🐭 PART OF MOUSE CONTOLL -------------------------- 
 
-  //* 🐭 PART OF MOUSE CONTOLL -------------------------- */
+function onDocumentMouseMove(event) {
+  lon = (event.clientX - onPointerDownPointerX) * 0.1 + onPointerDownLon;
+  lat = (event.clientY - onPointerDownPointerY) * 0.1 + onPointerDownLat;
+}
 
-  function onDocumentMouseMove(event) {
-    lon = (event.clientX - onPointerDownPointerX) * 0.1 + onPointerDownLon;
-    lat = (event.clientY - onPointerDownPointerY) * 0.1 + onPointerDownLat;
-  }
+// 🐭 PART OF MOUSE CONTOLL -------------------------- 
 
-  //* 🐭 PART OF MOUSE CONTOLL -------------------------- */
+function onDocumentMouseUp() {
+  document.removeEventListener('mousemove', onDocumentMouseMove, false);
+  document.removeEventListener('mouseup', onDocumentMouseUp, false);
+}
 
-  function onDocumentMouseUp() {
-    document.removeEventListener('mousemove', onDocumentMouseMove, false);
-    document.removeEventListener('mouseup', onDocumentMouseUp, false);
-  }
+// 🐭 PART OF MOUSE CONTOLL -------------------------- 
 
-  //* 🐭 PART OF MOUSE CONTOLL -------------------------- */
+function onDocumentMouseWheel(event) {
+  var fov = camera.fov + event.deltaY * 0.05;
+  camera.fov = THREE.MathUtils.clamp(fov, 10, 75);
+  camera.updateProjectionMatrix();
+}
 
-  function onDocumentMouseWheel(event) {
-    var fov = camera.fov + event.deltaY * 0.05;
-    camera.fov = THREE.MathUtils.clamp(fov, 10, 75);
-    camera.updateProjectionMatrix();
-  }
+// 🔶 These cubes help you to get an orientation in space -------------------------- 
 
-});
+function helper() {
+
+  var helperObj, geometry, material;
+  var helperObjSize = 0.1;
+  var helperSize = 2;
+
+  geometry = new THREE.BoxGeometry(helperObjSize, helperObjSize, helperObjSize); material = new THREE.MeshNormalMaterial(); helperObj = new THREE.Mesh(geometry, material);
+  helperObj.position.x = 0; helperObj.position.y = 0; helperObj.position.z = 0; scene.add(helperObj);
+  geometry = new THREE.BoxGeometry(helperObjSize, helperObjSize, helperObjSize); material = new THREE.MeshNormalMaterial(); helperObj = new THREE.Mesh(geometry, material);
+  helperObj.position.x = -helperSize; helperObj.position.y = -helperSize; helperObj.position.z = helperSize; scene.add(helperObj);
+  geometry = new THREE.BoxGeometry(helperObjSize, helperObjSize, helperObjSize); material = new THREE.MeshNormalMaterial(); helperObj = new THREE.Mesh(geometry, material);
+  helperObj.position.x = -helperSize; helperObj.position.y = helperSize; helperObj.position.z = helperSize; scene.add(helperObj);
+  geometry = new THREE.BoxGeometry(helperObjSize, helperObjSize, helperObjSize); material = new THREE.MeshNormalMaterial(); helperObj = new THREE.Mesh(geometry, material);
+  helperObj.position.x = helperSize; helperObj.position.y = helperSize; helperObj.position.z = helperSize; scene.add(helperObj);
+  geometry = new THREE.BoxGeometry(helperObjSize, helperObjSize, helperObjSize); material = new THREE.MeshNormalMaterial(); helperObj = new THREE.Mesh(geometry, material);
+  helperObj.position.x = helperSize; helperObj.position.y = helperSize; helperObj.position.z = -helperSize; scene.add(helperObj);
+  geometry = new THREE.BoxGeometry(helperObjSize, helperObjSize, helperObjSize); material = new THREE.MeshNormalMaterial(); helperObj = new THREE.Mesh(geometry, material);
+  helperObj.position.x = helperSize; helperObj.position.y = -helperSize; helperObj.position.z = -helperSize; scene.add(helperObj);
+  geometry = new THREE.BoxGeometry(helperObjSize, helperObjSize, helperObjSize); material = new THREE.MeshNormalMaterial(); helperObj = new THREE.Mesh(geometry, material);
+  helperObj.position.x = helperSize; helperObj.position.y = -helperSize; helperObj.position.z = helperSize; scene.add(helperObj);
+  geometry = new THREE.BoxGeometry(helperObjSize, helperObjSize, helperObjSize); material = new THREE.MeshNormalMaterial(); helperObj = new THREE.Mesh(geometry, material);
+  helperObj.position.x = -helperSize; helperObj.position.y = helperSize; helperObj.position.z = -helperSize; scene.add(helperObj);
+  geometry = new THREE.BoxGeometry(helperObjSize, helperObjSize, helperObjSize); material = new THREE.MeshNormalMaterial(); helperObj = new THREE.Mesh(geometry, material);
+  helperObj.position.x = -helperSize; helperObj.position.y = -helperSize; helperObj.position.z = -helperSize; scene.add(helperObj);
+
+}

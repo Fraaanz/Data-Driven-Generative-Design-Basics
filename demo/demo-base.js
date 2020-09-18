@@ -1,6 +1,6 @@
 /* 📀 LOAD THREE JS -------------------------- */
 
-import * as THREE from '../sources/three.js-master/build/three.module.js';
+import * as THREE from '../sources/three.module.js';
 
 /* 📊 LOAD CSV DATA -------------------------- */
 
@@ -10,10 +10,14 @@ d3.csv("../sources/demo-data/SRLCC_a1b_Temp_ECHAM5-MPI.csv").then(function (data
 
   var camera, scene, renderer;
   var geometry, material, mesh, light;
-  var groupRed, groupHelper;
   var onPointerDownPointerX, onPointerDownPointerY, onPointerDownLon, onPointerDownLat;
   var lon = 0, lat = 0;
   var phi = 0, theta = 0;
+
+  /* 🌐 GROUPS SETTING -------------------------- */
+
+  var groupHelper = new THREE.Group();
+  var groupRed = new THREE.Group();
 
   /* 🚀 RUN MAIN FUNCTIONS -------------------------- */
 
@@ -33,11 +37,6 @@ d3.csv("../sources/demo-data/SRLCC_a1b_Temp_ECHAM5-MPI.csv").then(function (data
 
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0xefefef);
-
-    /* 🌐 GROUPS SETTING -------------------------- */
-
-    groupHelper = new THREE.Group();
-    groupRed = new THREE.Group();
 
     /* 👇 YOUR 3D OBJECTS ✅ ----------------------- */
 

@@ -40,7 +40,7 @@ function init() {
 
   // 👇 INNER OBJECT
 
-  var geometry = new THREE.BoxGeometry(3, 3, 3);
+  var geometry = new THREE.ConeGeometry( 3, 1, 32 );
   var material = new THREE.MeshPhysicalMaterial({
     color: "#AAAAAA",
     reflectivity: 1,
@@ -62,7 +62,7 @@ function init() {
 
   // 👇 OUTER OBJECT
 
-  var geometry = new THREE.BoxGeometry(1, 1, 1);
+  var geometry = new THREE.ConeGeometry( 1, 3, 32 );
   var material = new THREE.MeshPhysicalMaterial({
     color: "#EE44AA",
     reflectivity: 1,

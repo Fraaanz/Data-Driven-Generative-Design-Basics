@@ -40,7 +40,7 @@ function init() {
 
   // 👇 INNER OBJECT
 
-  var geometry = new THREE.BoxGeometry(3, 3, 3);
+  var geometry = new THREE.TorusKnotGeometry( 2, 0.5, 100, 40, 2, 5 );
   var material = new THREE.MeshPhysicalMaterial({
     color: "#AAAAAA",
     reflectivity: 1,
@@ -62,7 +62,7 @@ function init() {
 
   // 👇 OUTER OBJECT
 
-  var geometry = new THREE.BoxGeometry(1, 1, 1);
+  var geometry = new THREE.TorusKnotGeometry( 0.7, 0.2, 200, 40, 10, 3 );
   var material = new THREE.MeshPhysicalMaterial({
     color: "#EE44AA",
     reflectivity: 1,
@@ -219,4 +219,5 @@ function helper() {
   var hex = 0xff0000;
   var arrowHelper = new THREE.ArrowHelper( dir, origin, length, hex );
   scene.add( arrowHelper );
+
 }

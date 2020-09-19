@@ -42,7 +42,7 @@ function init() {
 
   var loader = new THREE.FontLoader();
 
-  loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
+  loader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font) {
 
     var geometry = new THREE.TextGeometry('DATA', {
       font: font,
@@ -81,7 +81,7 @@ function init() {
 
   var loader = new THREE.FontLoader();
 
-  loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
+  loader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font) {
 
     var geometry = new THREE.TextGeometry('driven', {
       font: font,

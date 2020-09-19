@@ -2,9 +2,7 @@
 ## Version 0.1
 Here you will find code example and informations how to get started with ThreeJS and some basics on Generative Data Visualization with CSV data sources.
 
-*CSV data exaples are still in progress* 🚧
-
-This demo project is designed to run on a local server.
+This project is designed to run on a local server.
 
 I recommend to the participants of my courses: 
 [Visual Studio Code](https://code.visualstudio.com) with the PlugIn [Live Server by Ritwick Dey 🔗](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer)
@@ -16,3 +14,4 @@ I recommend to the participants of my courses:
 
 ### 🎥 Preview
 ![Screenshot](https://github.com/Fraaanz/Data-Driven-Generative-Design-Basics/raw/master/preview.jpg)
+*Screenshot: "demo-project-step-count.html"*

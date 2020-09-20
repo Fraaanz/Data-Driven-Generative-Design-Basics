@@ -1,7 +1,10 @@
 # Data Driven Generative Design with ThreeJS – Basic setup and demo
 **Version 0.2**
-![Screenshot](https://github.com/Fraaanz/Data-Driven-Generative-Design-Basics/raw/master/preview.jpg)
+![Screenshot](https://github.com/Fraaanz/Data-Driven-Generative-Design-Basics/raw/master/previewA.jpg)
 *Screenshot: "demo-project-step-count.html"*
+
+![Screenshot](https://github.com/Fraaanz/Data-Driven-Generative-Design-Basics/raw/master/previewB.jpg)
+*Screenshot: "demo-project-step-count-two.html"*
 
 Here you will find code example and informations how to get started with ThreeJS and some basics on Generative Data Visualization with CSV data sources.
 

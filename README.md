@@ -1,5 +1,7 @@
-# Data Driven Generative Design with ThreeJS – Basic setup and demo
-**Version 0.2**
+# Data Driven Generative Design with ThreeJS
+**Basic setup and demo | v0.2**
+
+
 ![Screenshot](https://github.com/Fraaanz/Data-Driven-Generative-Design-Basics/raw/master/previewA.jpg)
 *Screenshot: "demo-project-step-count.html"*
 

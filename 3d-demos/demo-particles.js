@@ -4,7 +4,7 @@ import * as THREE from '../sources/three.module.js';
 
 // 🌐 GLOBAL VARIABLES -------------------------- 
 
-var camera, scene, renderer;
+var camera, scene, renderer, points;
 var onPointerDownPointerX, onPointerDownPointerY, onPointerDownLon, onPointerDownLat;
 var lon = 0, lat = 0;
 var phi = 0, theta = 0;
@@ -30,7 +30,8 @@ function init() {
   // 🌇 SCENE SETTING -------------------------- 
 
   scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xFFFFFF);
+  scene.background = new THREE.Color(0x000000);
+  scene.fog = new THREE.Fog(0x000000, 0, 25);
 
   // 🔶 HELPER CUBES ✅ ----------------------- 
 
@@ -38,72 +39,71 @@ function init() {
 
   // 👇 YOUR 3D OBJECTS ✅ ----------------------- 
 
-  // 👇 INNER OBJECT
 
-  var geometry = new THREE.SphereGeometry( 2, 32, 32 );
-  var material = new THREE.MeshPhysicalMaterial({
-    color: "#AAAAAA",
-    reflectivity: 1,
-    refractionRatio: 1,
-    roughness: 0,
-    metalness: 0,
-    clearcoat: 1,
-    side: THREE.DoubleSide,
-    clearcoatRoughness: 0,
-    transmission: 0,
-    opacity: 1,
-    transparent: true
-  });
-  var mesh = new THREE.Mesh(geometry, material);
-  mesh.position.x = 0;
-  mesh.position.y = 0;
-  mesh.position.z = 0;
-  groupedObjectsA.add(mesh);
 
-  // 👇 OUTER OBJECT
 
-  var geometry = new THREE.SphereGeometry( 0.5, 32, 32 );
-  var material = new THREE.MeshPhysicalMaterial({
-    color: "#EE44AA",
-    reflectivity: 1,
-    refractionRatio: 1,
-    roughness: 0,
-    metalness: 0,
-    clearcoat: 1,
-    side: THREE.DoubleSide,
-    clearcoatRoughness: 0,
-    transmission: 0,
-    opacity: 1,
-    transparent: true
-  });
-  var mesh = new THREE.Mesh(geometry, material);
-  mesh.position.x = 5;
-  mesh.position.y = 0;
-  mesh.position.z = 0;
-  groupedObjectsA.add(mesh);
+  var particles = 1000000;
+
+  var geometry = new THREE.BufferGeometry();
+
+  var positions = [];
+  var colors = [];
+
+  var color = new THREE.Color();
+
+  var n = 1000, n2 = n / 2; // particles spread in the cube
+
+  for ( var i = 0; i < particles; i ++ ) {
+
+    // positions
+
+    var x = (Math.random() * n - n2);
+    var y = (Math.random() * n - n2);
+    var z = (Math.random() * n - n2);
+
+    positions.push( x/50, y/50, z/50);
+
+    // colors
+
+    var vx = ( x / n ) + 0.5;
+    var vy = ( y / n ) + 0.5;
+    var vz = ( z / n ) + 0.5;
+
+    color.setRGB( vx, vy, vz );
+
+    colors.push( color.r, color.g, color.b );
+
+  }
+
+  geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
+  geometry.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+
+  geometry.computeBoundingSphere();
+  
+
+  var material = new THREE.PointsMaterial( { size: 0.02, vertexColors: true } );
+
+  points = new THREE.Points( geometry, material );
+  scene.add( points );
+
 
   // 🌞 LIGHT SETTINGS -------------------------- 
 
-  var lightA;
-  lightA = new THREE.SpotLight(0xFFFFAA, 1);
-  lightA.position.set(-15, 15, 15);
 
-  var lightB;
-  lightB = new THREE.SpotLight(0xAAFFFF, 1);
-  lightB.position.set(15, -15, 15);
 
   // 👉 🌇 MAKE IT VISIBLE -------------------------- 
 
-  scene.add(groupedObjectsA, lightA, lightB);
+  scene.add(groupedObjectsA);
 
   // 🎛 RENDER SETTINGS -------------------------- 
 
   renderer = new THREE.WebGLRenderer({ antialias: true });
-  renderer.setPixelRatio(window.devicePixelRatio / 1);
+  renderer.setPixelRatio(window.devicePixelRatio / 2);
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.toneMapping = THREE.ReinhardToneMapping;
-  renderer.toneMappingExposure = 2.3;
+  renderer.toneMappingExposure = 4.3;
   renderer.shadowMap.enabled = true;
+
   document.body.appendChild(renderer.domElement);
 
   // 🐭 PART OF MOUSE CONTOLL -------------------------- 
@@ -117,10 +117,6 @@ function init() {
 
 function animate() {
   requestAnimationFrame(animate);
-
-  // CUBE
-  groupedObjectsA.rotation.x += 0.01;
-  groupedObjectsA.rotation.y += 0.02;
 
   // MOUSE 
   lon += .15;
@@ -175,7 +171,8 @@ function helper() {
 
   var helperObj, geometry, material;
   var helperObjSize = 0.1;
-  var helperSize = 2;
+  var helperSize = 3;
+  var helperloader = new THREE.FontLoader();
 
   geometry = new THREE.BoxGeometry(helperObjSize, helperObjSize, helperObjSize); material = new THREE.MeshNormalMaterial(); helperObj = new THREE.Mesh(geometry, material);
   helperObj.position.x = 0; helperObj.position.y = 0; helperObj.position.z = 0; scene.add(helperObj);
@@ -195,28 +192,32 @@ function helper() {
   helperObj.position.x = -helperSize; helperObj.position.y = helperSize; helperObj.position.z = -helperSize; scene.add(helperObj);
   geometry = new THREE.BoxGeometry(helperObjSize, helperObjSize, helperObjSize); material = new THREE.MeshNormalMaterial(); helperObj = new THREE.Mesh(geometry, material);
   helperObj.position.x = -helperSize; helperObj.position.y = -helperSize; helperObj.position.z = -helperSize; scene.add(helperObj);
+  
+  helperloader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font) { var geometry = new THREE.TextGeometry('X', {font: font, size: 0.2, height: 0.1, }); var material = new THREE.MeshNormalMaterial(); var helperTxt = new THREE.Mesh(geometry, material); helperTxt.position.x = 2.5; helperTxt.position.y = 0; helperTxt.position.z = 0; scene.add(helperTxt); });
+  helperloader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font) { var geometry = new THREE.TextGeometry('Y', {font: font, size: 0.2, height: 0.1, }); var material = new THREE.MeshNormalMaterial(); var helperTxt = new THREE.Mesh(geometry, material); helperTxt.position.x = 0; helperTxt.position.y = 2.5; helperTxt.position.z = 0; scene.add(helperTxt); });
+  helperloader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font) { var geometry = new THREE.TextGeometry('Z', {font: font, size: 0.2, height: 0.1, }); var material = new THREE.MeshNormalMaterial(); var helperTxt = new THREE.Mesh(geometry, material); helperTxt.position.x = 0; helperTxt.position.y = 0; helperTxt.position.z = 2.5; scene.add(helperTxt); });
 
-  var dir = new THREE.Vector3( 0, 1, 0 );
+  var dir = new THREE.Vector3(0, 1, 0);
   dir.normalize();
-  var origin = new THREE.Vector3( 0, 0, 0 );
+  var origin = new THREE.Vector3(0, 0, 0);
   var length = 2;
   var hex = 0x00ff00;
-  var arrowHelper = new THREE.ArrowHelper( dir, origin, length, hex );
-  scene.add( arrowHelper );
+  var arrowHelper = new THREE.ArrowHelper(dir, origin, length, hex);
+  scene.add(arrowHelper);
 
-  var dir = new THREE.Vector3( 1, 0, 0 );
+  var dir = new THREE.Vector3(1, 0, 0);
   dir.normalize();
-  var origin = new THREE.Vector3( 0, 0, 0 );
+  var origin = new THREE.Vector3(0, 0, 0);
   var length = 2;
   var hex = 0x0000ff;
-  var arrowHelper = new THREE.ArrowHelper( dir, origin, length, hex );
-  scene.add( arrowHelper );
+  var arrowHelper = new THREE.ArrowHelper(dir, origin, length, hex);
+  scene.add(arrowHelper);
 
-  var dir = new THREE.Vector3( 0, 0, 1 );
+  var dir = new THREE.Vector3(0, 0, 1);
   dir.normalize();
-  var origin = new THREE.Vector3( 0, 0, 0 );
+  var origin = new THREE.Vector3(0, 0, 0);
   var length = 2;
   var hex = 0xff0000;
-  var arrowHelper = new THREE.ArrowHelper( dir, origin, length, hex );
-  scene.add( arrowHelper );
+  var arrowHelper = new THREE.ArrowHelper(dir, origin, length, hex);
+  scene.add(arrowHelper);
 }

@@ -1,32 +1,27 @@
 // 📀 LOAD THREE JS -------------------------- 
 
 import * as THREE from '../sources/three.module.js';
-import { EffectComposer } from '../sources/three.js-master/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from '../sources/three.js-master/examples/jsm/postprocessing/RenderPass.js';
-import { GlitchPass } from '../sources/three.js-master/examples/jsm/postprocessing/GlitchPass.js';
-import { HalftonePass } from '../sources/three.js-master/examples/jsm/postprocessing/HalftonePass.js';
-import { AfterimagePass } from '../sources/three.js-master/examples/jsm/postprocessing/AfterimagePass.js';
-import { UnrealBloomPass } from '../sources/three.js-master/examples/jsm/postprocessing/UnrealBloomPass.js';
 
-// 📊 LOAD XML DATA ----------------------------------------
+// 📊 LOAD CSV DATA ----------------------------------------
 // Do not forget to load the D3 Framework in your HTML file!
 
-d3.xml("../sources/demo-data/HealthData-StepCount-Demo.xml").then(function (data) {
-  var xml = data.documentElement.getElementsByTagName("Record");
-  var currentSteps;
+d3.csv("../sources/demo-data/dwd-demo-data-small.csv").then(function (data) {
+
+  // Display table in console
+  // console.table(data);;
 
   // 🌐 GLOBAL VARIABLES -------------------------- 
 
-  var camera, scene, renderer, composer;
+  var camera, scene, renderer;
   var onPointerDownPointerX, onPointerDownPointerY, onPointerDownLon, onPointerDownLat;
   var lon = 0, lat = 0;
   var phi = 0, theta = 0;
-  var loopCount = 50;
-  var loopCountShift = 0;
 
   // 🌐 GROUPS SETTING -------------------------- 
 
   var groupedObjectsA = new THREE.Group();
+  //var groupedObjectsB = new THREE.Group();
+  //var groupedObjectsC = new THREE.Group();
 
   // 🚀 RUN MAIN FUNCTIONS -------------------------- 
 
@@ -39,126 +34,63 @@ d3.xml("../sources/demo-data/HealthData-StepCount-Demo.xml").then(function (data
 
     // 🎥 CAM SETTING -------------------------- 
 
-    camera = new THREE.PerspectiveCamera(12, window.innerWidth / window.innerHeight, 0.02, 55);
-    camera.position.z = 0;
-    camera.position.x = 0;
-    camera.position.y = 0;
+    camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 110);
 
     // 🌇 SCENE SETTING -------------------------- 
 
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x000000);
-    scene.fog = new THREE.Fog(0x000000, 15, 35);
+    scene.background = new THREE.Color(0xFFFFFF);
+    scene.fog = new THREE.Fog(0x000000, 5, 25);
 
     // 🔶 HELPER CUBES ✅ ----------------------- 
 
-    //helper();
+    helper();
 
     // 👇 YOUR 3D OBJECTS ✅ ----------------------- 
 
-    for (var i = 0 + loopCountShift; i <= loopCount + loopCountShift; i++) {
+    for (var i = 0; i <= 9; i++) {
+      var cubePosY = data[i]["LAT"] - 50;
+      var cubePosZ = data[i]["LON"] - 10;
 
-      currentSteps = xml.innerHTML = xml[i].getAttribute("value");
+      console.log("🎯 lat & long:" + cubePosY + " " + cubePosZ);
 
-      var brightness = currentSteps;
-      brightness = "rgb(" + Math.round(brightness) + "," + Math.round(brightness) + "," + Math.round(brightness) + ")";
-
-      var geometry = new THREE.TorusGeometry(1, currentSteps / 1000, 50, 100, 50 / (currentSteps));
+      var geometry = new THREE.BoxGeometry(1, 1, 1);
       var material = new THREE.MeshPhysicalMaterial({
-        color: brightness,
-        reflectivity: 1,
-        refractionRatio: 1,
-        roughness: 0,
-        metalness: 0,
-        clearcoat: 1,
+        color: "#0022FF",
         side: THREE.DoubleSide,
-        clearcoatRoughness: 0,
         transmission: 0,
         opacity: 1,
         transparent: true
       });
       var mesh = new THREE.Mesh(geometry, material);
       mesh.position.x = 0;
-      mesh.position.y = 0;
-      mesh.position.z = 0;
-      mesh.name = 'klaus' + i;
-      console.log('NAME: ' + mesh.name);
-      rotateObject(mesh, 0, 0, 10 - (currentSteps / 50));
+      mesh.position.y = cubePosY;
+      mesh.position.z = cubePosZ;
       groupedObjectsA.add(mesh);
-
-      console.log('🔸 Data row: ' + i + ' |  Steps: ' + currentSteps / 100);
     }
 
     // 🌞 LIGHT SETTINGS -------------------------- 
 
-    var light = new THREE.PointLight(0x9999FF, 2, 200);
-    light.position.set(0, 10, 10);
-    scene.add(light);
+    var lightA;
+    lightA = new THREE.HemisphereLight(0xFFFFFF, 1);
 
-    var light = new THREE.PointLight(0xFF9999, 2, 200);
-    light.position.set(10, 0, 10);
-    scene.add(light);
+    var lightB;
+    lightB = new THREE.SpotLight(0xFFFFFF, 20);
+    lightB.position.set(30, 100, 50);
 
     // 👉 🌇 MAKE IT VISIBLE -------------------------- 
 
-    scene.add(groupedObjectsA);
-
-
+    scene.add(groupedObjectsA, lightA, lightB);
 
     // 🎛 RENDER SETTINGS -------------------------- 
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
-
-    composer = new EffectComposer(renderer);
-
-    var renderPass = new RenderPass(scene, camera);
-    composer.addPass(renderPass);
-/*
-    var params = {
-      enable: true,
-    };
-    var afterimagePass = new AfterimagePass();
-    afterimagePass.uniforms["damp"].value = 0.8;
-    composer.addPass(afterimagePass);
-*/
-    var params = {
-      shape: 1,
-      radius: 4,
-      rotateR: Math.PI / 12,
-      rotateB: Math.PI / 12,
-      rotateG: Math.PI / 12,
-      scatter: 0,
-      blending: 0.7,
-      blendingMode: 1,
-      greyscale: false,
-      disable: false
-    };
-    var halftonePass = new HalftonePass(window.innerWidth, window.innerHeight, params);
-    composer.addPass(halftonePass);
-
-    var params = {
-      exposure: 0.7,
-      bloomStrength: 1.4,
-      bloomThreshold: 0,
-      bloomRadius: 0.5
-    };
-    var bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
-    bloomPass.threshold = params.bloomThreshold;
-    bloomPass.strength = params.bloomStrength;
-    bloomPass.radius = params.bloomRadius;
-    composer.addPass(bloomPass);
-
-    composer.setPixelRatio(window.devicePixelRatio / 1.5);
-    composer.setSize(window.innerWidth, window.innerHeight);
-
-    renderer.setPixelRatio(window.devicePixelRatio / 1.5);
+    renderer.setPixelRatio(window.devicePixelRatio / 1);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.toneMapping = THREE.ReinhardToneMapping;
     renderer.toneMappingExposure = 2.3;
     renderer.shadowMap.enabled = true;
     document.body.appendChild(renderer.domElement);
-
-
 
     // 🐭 PART OF MOUSE CONTOLL -------------------------- 
 
@@ -173,24 +105,15 @@ d3.xml("../sources/demo-data/HealthData-StepCount-Demo.xml").then(function (data
     requestAnimationFrame(animate);
 
     // MOUSE 
-    lon += 0;
     lat = Math.max(- 85, Math.min(85, lat));
     phi = THREE.MathUtils.degToRad(90 - lat);
     theta = THREE.MathUtils.degToRad(lon);
-    camera.position.x = 10 * Math.sin(phi) * Math.cos(theta) + 5;
-    camera.position.y = 10 * Math.cos(phi) + 3;
-    camera.position.z = 10 * Math.sin(phi) * Math.sin(theta) + 3;
+    camera.position.x = 10 * Math.sin(phi) * Math.cos(theta);
+    camera.position.y = 10 * Math.cos(phi);
+    camera.position.z = 10 * Math.sin(phi) * Math.sin(theta);
     camera.lookAt(scene.position);
 
-    for (var i = 0 + loopCountShift; i <= loopCount + loopCountShift; i++) {
-      var object = scene.getObjectByName('klaus' + i);
-      rotateObject(object, 0, 0, Math.cos(i * 0.3));
-    };
-
-    rotateObject(groupedObjectsA, Math.sin(0.5), Math.sin(0.5), 0);
-
     renderer.render(scene, camera);
-    composer.render();
   }
 
   // 🐭 PART OF MOUSE CONTOLL -------------------------- 
@@ -223,16 +146,8 @@ d3.xml("../sources/demo-data/HealthData-StepCount-Demo.xml").then(function (data
 
   function onDocumentMouseWheel(event) {
     var fov = camera.fov + event.deltaY * 0.05;
-    camera.fov = THREE.MathUtils.clamp(fov, 1, 175);
+    camera.fov = THREE.MathUtils.clamp(fov, 10, 75);
     camera.updateProjectionMatrix();
-  }
-
-  // 🔄 Rotation funktion --------------------
-
-  function rotateObject(object, degreeX = 0, degreeY = 0, degreeZ = 0) {
-    object.rotateX(THREE.Math.degToRad(degreeX));
-    object.rotateY(THREE.Math.degToRad(degreeY));
-    object.rotateZ(THREE.Math.degToRad(degreeZ));
   }
 
   // 🔶 These cubes help you to get an orientation in space -------------------------- 
@@ -241,7 +156,8 @@ d3.xml("../sources/demo-data/HealthData-StepCount-Demo.xml").then(function (data
 
     var helperObj, geometry, material;
     var helperObjSize = 0.1;
-    var helperSize = 2;
+    var helperSize = 3;
+    var helperloader = new THREE.FontLoader();
 
     geometry = new THREE.BoxGeometry(helperObjSize, helperObjSize, helperObjSize); material = new THREE.MeshNormalMaterial(); helperObj = new THREE.Mesh(geometry, material);
     helperObj.position.x = 0; helperObj.position.y = 0; helperObj.position.z = 0; scene.add(helperObj);
@@ -261,6 +177,10 @@ d3.xml("../sources/demo-data/HealthData-StepCount-Demo.xml").then(function (data
     helperObj.position.x = -helperSize; helperObj.position.y = helperSize; helperObj.position.z = -helperSize; scene.add(helperObj);
     geometry = new THREE.BoxGeometry(helperObjSize, helperObjSize, helperObjSize); material = new THREE.MeshNormalMaterial(); helperObj = new THREE.Mesh(geometry, material);
     helperObj.position.x = -helperSize; helperObj.position.y = -helperSize; helperObj.position.z = -helperSize; scene.add(helperObj);
+
+    helperloader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font) { var geometry = new THREE.TextGeometry('X', { font: font, size: 0.2, height: 0.1, }); var material = new THREE.MeshNormalMaterial(); var helperTxt = new THREE.Mesh(geometry, material); helperTxt.position.x = 2.5; helperTxt.position.y = 0; helperTxt.position.z = 0; scene.add(helperTxt); });
+    helperloader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font) { var geometry = new THREE.TextGeometry('Y', { font: font, size: 0.2, height: 0.1, }); var material = new THREE.MeshNormalMaterial(); var helperTxt = new THREE.Mesh(geometry, material); helperTxt.position.x = 0; helperTxt.position.y = 2.5; helperTxt.position.z = 0; scene.add(helperTxt); });
+    helperloader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font) { var geometry = new THREE.TextGeometry('Z', { font: font, size: 0.2, height: 0.1, }); var material = new THREE.MeshNormalMaterial(); var helperTxt = new THREE.Mesh(geometry, material); helperTxt.position.x = 0; helperTxt.position.y = 0; helperTxt.position.z = 2.5; scene.add(helperTxt); });
 
     var dir = new THREE.Vector3(0, 1, 0);
     dir.normalize();
@@ -286,7 +206,5 @@ d3.xml("../sources/demo-data/HealthData-StepCount-Demo.xml").then(function (data
     var arrowHelper = new THREE.ArrowHelper(dir, origin, length, hex);
     scene.add(arrowHelper);
   }
-
-
 
 });

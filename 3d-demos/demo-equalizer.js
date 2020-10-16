@@ -2,23 +2,30 @@
 
 import * as THREE from '../sources/three.module.js';
 
-// 📊 LOAD XML DATA ----------------------------------------
-// Do not forget to load the D3 Framework in your HTML file!
+// 🌐 GLOBAL VARIABLES -------------------------- 
 
-d3.xml("../sources/demo-data/HealthData-StepCount-Demo.xml").then(function (data) {
-  var xml = data.documentElement.getElementsByTagName("Record");
-  var currentSteps;
+var camera, scene, renderer;
+var onPointerDownPointerX, onPointerDownPointerY, onPointerDownLon, onPointerDownLat;
+var lon = 0, lat = 0;
+var phi = 0, theta = 0;
 
-  // 🌐 GLOBAL VARIABLES -------------------------- 
+// 🌐 GROUPS SETTING -------------------------- 
 
-  var camera, scene, renderer;
-  var onPointerDownPointerX, onPointerDownPointerY, onPointerDownLon, onPointerDownLat;
-  var lon = 0, lat = 0;
-  var phi = 0, theta = 0;
+var groupedObjectsA = new THREE.Group();
+var lightA;
 
-  // 🌐 GROUPS SETTING -------------------------- 
+var yourObject;
+var yourObjects = document.getElementsByTagName('p');
 
-  var groupedObjectsA = new THREE.Group();
+var soundAllowed = function (stream) {
+
+  window.persistAudioStream = stream;
+  var audioContent = new AudioContext();
+  var audioStream = audioContent.createMediaStreamSource(stream);
+  var analyser = audioContent.createAnalyser();
+  audioStream.connect(analyser);
+  analyser.fftSize = 1024;
+  var frequencyArray = new Uint8Array(analyser.frequencyBinCount);
 
   // 🚀 RUN MAIN FUNCTIONS -------------------------- 
 
@@ -32,14 +39,13 @@ d3.xml("../sources/demo-data/HealthData-StepCount-Demo.xml").then(function (data
     // 🎥 CAM SETTING -------------------------- 
 
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 110);
-    camera.position.z = 19;
-    camera.position.y = 20;
+    camera.position.z = 0;
 
     // 🌇 SCENE SETTING -------------------------- 
 
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xFFFFFF);
-    scene.fog = new THREE.Fog(0xFFFFFF, 15, 35);
+    scene.background = new THREE.Color(0x000000);
+    scene.fog = new THREE.Fog(0x000000, 5, 25);
 
     // 🔶 HELPER CUBES ✅ ----------------------- 
 
@@ -47,90 +53,39 @@ d3.xml("../sources/demo-data/HealthData-StepCount-Demo.xml").then(function (data
 
     // 👇 YOUR 3D OBJECTS ✅ ----------------------- 
 
-    var loopCount = 1499; // starts with 0
-    var loopCountShift = 0;
+    for (var i = 0; i < 255; i++) {
 
-    var boxPositionX = 0;
-    var boxPositionZ = 0;
-
-    for (var i = 0 + loopCountShift; i <= loopCount + loopCountShift; i++) {
-
-      currentSteps = xml.innerHTML = xml[i].getAttribute("value");
-
-      var boxSizeX = 1;
-      var boxSizeY = currentSteps / 100;
-      var boxSizeZ = 1;
-
-      var boxDistance = 1;
-      var boxMaxRowItems = 30;
-
-      var brightness = currentSteps;
-      brightness = "rgb(" + Math.round(brightness / 1) + "," + Math.round(brightness / 4) + "," + Math.round(brightness / 4) + ")";
-
-      var geometry = new THREE.BoxGeometry(boxSizeX, boxSizeY, boxSizeZ);
+      var geometry = new THREE.SphereGeometry( 0.5, 32, 32 );
       var material = new THREE.MeshPhysicalMaterial({
-        color: brightness,
+        color: "rgb(0, 0, 0)",
         reflectivity: 1,
         refractionRatio: 1,
-        roughness: 1,
-        metalness: 0.7,
-        clearcoat: 0,
-        side: THREE.DoubleSide,
-        clearcoatRoughness: 1,
+        roughness: 0,
+        metalness: 0,
+        clearcoat: 1,
+        clearcoatRoughness: 0,
         transmission: 0,
-        opacity: 0.7,
+        opacity: 1,
         transparent: true
       });
       var mesh = new THREE.Mesh(geometry, material);
-      mesh.position.x = boxPositionX;
-      mesh.position.y = boxSizeY / 2;
-      mesh.position.z = boxPositionZ;
+      mesh.position.x = -2;
+      mesh.position.y = 0;
+      mesh.position.z = -10 + i/12;
+      mesh.name = i;
       groupedObjectsA.add(mesh);
 
-      var boxRowBreak = boxMaxRowItems * (boxSizeX + boxDistance);
-
-      console.log('boxRowBreak: ' + boxRowBreak);
-
-      boxPositionX = boxPositionX + boxDistance + boxSizeX;
-      if (boxPositionX >= boxRowBreak) {
-        boxPositionX = 0;
-        boxPositionZ = boxPositionZ + boxDistance + boxSizeZ;
-      }
-
-      console.log('🔸 Data row: ' + i + ' |  Steps: ' + currentSteps + ' | Brightness: ' + brightness + ' | boxPositionX: ' + boxPositionX);
     }
-
-    groupedObjectsA.position.x = -boxRowBreak/2;
-    groupedObjectsA.position.z = -boxPositionZ/2;
 
     // 🌞 LIGHT SETTINGS -------------------------- 
 
-    var light = new THREE.PointLight(0xFF44FF, 1, 2000);
-    light.position.set(0, 0, 210);
-    scene.add(light);
-
-    var light = new THREE.PointLight(0xff9933, 2, 2000);
-    light.position.set(0, -211, 50);
-    scene.add(light);
-
-    var light = new THREE.PointLight(0xff0077, 2, 2000);
-    light.position.set(-211, 0, 50);
-    scene.add(light);
-
-    var light = new THREE.PointLight(0x344ff, 1, 2000);
-    light.position.set(0, 211, 50);
-    scene.add(light);
-
-    var light = new THREE.PointLight(0x3399ff, 1, 2000);
-    light.position.set(211, 0, 50);
-    scene.add(light);
-
-
+    var lightA = new THREE.HemisphereLight( 0xffffff, 0x080820, 1 );
+    var lightB = new THREE.AmbientLight( 0x404040 );
 
 
     // 👉 🌇 MAKE IT VISIBLE -------------------------- 
 
-    scene.add(groupedObjectsA);
+    scene.add(groupedObjectsA, lightA, lightB);
 
     // 🎛 RENDER SETTINGS -------------------------- 
 
@@ -160,9 +115,21 @@ d3.xml("../sources/demo-data/HealthData-StepCount-Demo.xml").then(function (data
     phi = THREE.MathUtils.degToRad(90 - lat);
     theta = THREE.MathUtils.degToRad(lon);
     camera.position.x = 10 * Math.sin(phi) * Math.cos(theta);
-    camera.position.y = 10 * Math.cos(phi) + 10;
-    camera.position.z = 10 * Math.sin(phi) * Math.sin(theta) + 10;
+    camera.position.y = 10 * Math.cos(phi);
+    camera.position.z = 10 * Math.sin(phi) * Math.sin(theta);
     camera.lookAt(scene.position);
+
+    analyser.getByteFrequencyData(frequencyArray);
+    var adjustedLength;
+
+    // this loop modifies your objects
+    for (var i = 0; i < 255; i++) {
+
+      adjustedLength = Math.floor(frequencyArray[i]) - (Math.floor(frequencyArray[i]) % 5);
+      var object = scene.getObjectByName(i);
+      object.scale.set( adjustedLength/20, adjustedLength/20, 1 );
+      object.material.color.set( "rgb(" + Math.round(adjustedLength/2) + ", " + Math.round(adjustedLength/3.5) + ", " + Math.round(adjustedLength*2) + ")" );
+    }
 
     renderer.render(scene, camera);
   }
@@ -207,7 +174,8 @@ d3.xml("../sources/demo-data/HealthData-StepCount-Demo.xml").then(function (data
 
     var helperObj, geometry, material;
     var helperObjSize = 0.1;
-    var helperSize = 2;
+    var helperSize = 3;
+    var helperloader = new THREE.FontLoader();
 
     geometry = new THREE.BoxGeometry(helperObjSize, helperObjSize, helperObjSize); material = new THREE.MeshNormalMaterial(); helperObj = new THREE.Mesh(geometry, material);
     helperObj.position.x = 0; helperObj.position.y = 0; helperObj.position.z = 0; scene.add(helperObj);
@@ -227,6 +195,10 @@ d3.xml("../sources/demo-data/HealthData-StepCount-Demo.xml").then(function (data
     helperObj.position.x = -helperSize; helperObj.position.y = helperSize; helperObj.position.z = -helperSize; scene.add(helperObj);
     geometry = new THREE.BoxGeometry(helperObjSize, helperObjSize, helperObjSize); material = new THREE.MeshNormalMaterial(); helperObj = new THREE.Mesh(geometry, material);
     helperObj.position.x = -helperSize; helperObj.position.y = -helperSize; helperObj.position.z = -helperSize; scene.add(helperObj);
+    
+    helperloader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font) { var geometry = new THREE.TextGeometry('X', {font: font, size: 0.2, height: 0.1, }); var material = new THREE.MeshNormalMaterial(); var helperTxt = new THREE.Mesh(geometry, material); helperTxt.position.x = 2.5; helperTxt.position.y = 0; helperTxt.position.z = 0; scene.add(helperTxt); });
+    helperloader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font) { var geometry = new THREE.TextGeometry('Y', {font: font, size: 0.2, height: 0.1, }); var material = new THREE.MeshNormalMaterial(); var helperTxt = new THREE.Mesh(geometry, material); helperTxt.position.x = 0; helperTxt.position.y = 2.5; helperTxt.position.z = 0; scene.add(helperTxt); });
+    helperloader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font) { var geometry = new THREE.TextGeometry('Z', {font: font, size: 0.2, height: 0.1, }); var material = new THREE.MeshNormalMaterial(); var helperTxt = new THREE.Mesh(geometry, material); helperTxt.position.x = 0; helperTxt.position.y = 0; helperTxt.position.z = 2.5; scene.add(helperTxt); });
 
     var dir = new THREE.Vector3(0, 1, 0);
     dir.normalize();
@@ -253,4 +225,10 @@ d3.xml("../sources/demo-data/HealthData-StepCount-Demo.xml").then(function (data
     scene.add(arrowHelper);
   }
 
-});
+}
+
+var soundNotAllowed = function (error) {
+  h.innerHTML = "You must allow your microphone.";
+  console.log(error);
+}
+navigator.getUserMedia({ audio: true }, soundAllowed, soundNotAllowed);

@@ -2,17 +2,13 @@
 
 import * as THREE from '../sources/three.module.js';
 
-// 📊 LOAD XML DATA ----------------------------------------
+// 📊 LOAD CSV DATA ----------------------------------------
 // Do not forget to load the D3 Framework in your HTML file!
 
-d3.xml("../sources/demo-data/HealthData-StepCount-Demo.xml").then(function (data) {
-  var xml = data.documentElement.getElementsByTagName("Record");
-  var currentSteps;
+d3.csv("../sources/demo-data/dwd-demo-data-small.csv").then(function (data) {
 
-  for (var i = 0; i <= 9; i++) {
-    currentSteps = xml.innerHTML = xml[i].getAttribute("value");
-    console.log('🔸 Data row: ' + i + ' |  Steps: ' + currentSteps);
-  }
+  // Display table in console
+  // console.table(data);;
 
   // 🌐 GLOBAL VARIABLES -------------------------- 
 
@@ -24,6 +20,8 @@ d3.xml("../sources/demo-data/HealthData-StepCount-Demo.xml").then(function (data
   // 🌐 GROUPS SETTING -------------------------- 
 
   var groupedObjectsA = new THREE.Group();
+  //var groupedObjectsB = new THREE.Group();
+  //var groupedObjectsC = new THREE.Group();
 
   // 🚀 RUN MAIN FUNCTIONS -------------------------- 
 
@@ -37,88 +35,50 @@ d3.xml("../sources/demo-data/HealthData-StepCount-Demo.xml").then(function (data
     // 🎥 CAM SETTING -------------------------- 
 
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 110);
-    camera.position.z = 5;
-    camera.position.y = 15;
 
     // 🌇 SCENE SETTING -------------------------- 
 
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0xFFFFFF);
-    scene.fog = new THREE.Fog(0xFFFFFF, 15, 35);
+    scene.fog = new THREE.Fog(0x000000, 5, 25);
 
     // 🔶 HELPER CUBES ✅ ----------------------- 
 
-    //helper();
+    helper();
 
     // 👇 YOUR 3D OBJECTS ✅ ----------------------- 
 
-    var loopCount = 1500;
-    var loopCountShift = 0;
+    var cubePosY = (data[0]["LAT"])/10;
+    var cubePosZ = (data[0]["LON"])/10;
 
-    for (var i = 0 + loopCountShift; i <= loopCount + loopCountShift; i++) {
+    console.log("🎯 lat & long:" + cubePosY + " " + cubePosZ);
 
-      currentSteps = xml.innerHTML = xml[i].getAttribute("value");
-
-      var boxSizeX = 0.01;
-      var boxSizeY = 0.005 * currentSteps;
-      var boxSizeZ = 0.005 * currentSteps;
-
-      var boxDistanceX = 0.05;
-
-      var brightness = currentSteps;
-      brightness = "rgb(" + Math.round(brightness / 6.5) + "," + Math.round(brightness / 2.5) + "," + Math.round(brightness / 1.5) + ")";
-
-      var geometry = new THREE.BoxGeometry(boxSizeX, boxSizeY, boxSizeZ);
-      var material = new THREE.MeshPhysicalMaterial({
-        color: brightness,
-        reflectivity: 0,
-        refractionRatio: 0,
-        roughness: 0,
-        metalness: 0,
-        clearcoat: 0,
-        side: THREE.DoubleSide,
-        clearcoatRoughness: 0,
-        transmission: 0,
-        opacity: 0.2,
-        transparent: true
-      });
-      var mesh = new THREE.Mesh(geometry, material);
-      mesh.position.x = (0 + i - ((loopCount + loopCountShift) / 2)) * boxDistanceX;
-      mesh.position.y = 0;
-      mesh.position.z = 0;
-      groupedObjectsA.add(mesh);
-
-      console.log('🔸 Data row: ' + i + ' |  Steps: ' + currentSteps + ' | Brightness: ' + brightness);
-    }
+    var geometry = new THREE.BoxGeometry(1, 1, 1);
+    var material = new THREE.MeshPhysicalMaterial({
+      color: "#0022FF", 
+      side: THREE.DoubleSide,
+      transmission: 0,
+      opacity: 1,
+      transparent: true
+    });
+    var mesh = new THREE.Mesh(geometry, material);
+    mesh.position.x = 0;
+    mesh.position.y = cubePosY;
+    mesh.position.z = cubePosZ;
+    groupedObjectsA.add(mesh);
 
     // 🌞 LIGHT SETTINGS -------------------------- 
 
-    var light = new THREE.PointLight(0xFFFFFF, 1, 2000);
-    light.position.set(0, 0, 210);
-    scene.add(light);
+    var lightA;
+    lightA = new THREE.HemisphereLight(0xFFFFFF, 1);
 
-    var light = new THREE.PointLight(0xff9933, 2, 2000);
-    light.position.set(0, -211, 50);
-    scene.add(light);
-
-    var light = new THREE.PointLight(0xff0077, 2, 2000);
-    light.position.set(-211, 0, 50);
-    scene.add(light);
-
-    var light = new THREE.PointLight(0x33ffff, 1, 2000);
-    light.position.set(0, 211, 50);
-    scene.add(light);
-
-    var light = new THREE.PointLight(0x3399ff, 1, 2000);
-    light.position.set(211, 0, 50);
-    scene.add(light);
-    
-
-    
+    var lightB;
+    lightB = new THREE.SpotLight(0xFFFFFF, 20);
+    lightB.position.set(30, 100, 50);
 
     // 👉 🌇 MAKE IT VISIBLE -------------------------- 
 
-    scene.add(groupedObjectsA);
+    scene.add(groupedObjectsA, lightA, lightB);
 
     // 🎛 RENDER SETTINGS -------------------------- 
 
@@ -143,13 +103,12 @@ d3.xml("../sources/demo-data/HealthData-StepCount-Demo.xml").then(function (data
     requestAnimationFrame(animate);
 
     // MOUSE 
-    lon += 0;
     lat = Math.max(- 85, Math.min(85, lat));
     phi = THREE.MathUtils.degToRad(90 - lat);
     theta = THREE.MathUtils.degToRad(lon);
     camera.position.x = 10 * Math.sin(phi) * Math.cos(theta);
-    camera.position.y = 10 * Math.cos(phi) + 10;
-    camera.position.z = 10 * Math.sin(phi) * Math.sin(theta) + 10;
+    camera.position.y = 10 * Math.cos(phi);
+    camera.position.z = 10 * Math.sin(phi) * Math.sin(theta);
     camera.lookAt(scene.position);
 
     renderer.render(scene, camera);
@@ -195,7 +154,8 @@ d3.xml("../sources/demo-data/HealthData-StepCount-Demo.xml").then(function (data
 
     var helperObj, geometry, material;
     var helperObjSize = 0.1;
-    var helperSize = 2;
+    var helperSize = 3;
+    var helperloader = new THREE.FontLoader();
 
     geometry = new THREE.BoxGeometry(helperObjSize, helperObjSize, helperObjSize); material = new THREE.MeshNormalMaterial(); helperObj = new THREE.Mesh(geometry, material);
     helperObj.position.x = 0; helperObj.position.y = 0; helperObj.position.z = 0; scene.add(helperObj);
@@ -215,6 +175,10 @@ d3.xml("../sources/demo-data/HealthData-StepCount-Demo.xml").then(function (data
     helperObj.position.x = -helperSize; helperObj.position.y = helperSize; helperObj.position.z = -helperSize; scene.add(helperObj);
     geometry = new THREE.BoxGeometry(helperObjSize, helperObjSize, helperObjSize); material = new THREE.MeshNormalMaterial(); helperObj = new THREE.Mesh(geometry, material);
     helperObj.position.x = -helperSize; helperObj.position.y = -helperSize; helperObj.position.z = -helperSize; scene.add(helperObj);
+
+    helperloader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font) { var geometry = new THREE.TextGeometry('X', { font: font, size: 0.2, height: 0.1, }); var material = new THREE.MeshNormalMaterial(); var helperTxt = new THREE.Mesh(geometry, material); helperTxt.position.x = 2.5; helperTxt.position.y = 0; helperTxt.position.z = 0; scene.add(helperTxt); });
+    helperloader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font) { var geometry = new THREE.TextGeometry('Y', { font: font, size: 0.2, height: 0.1, }); var material = new THREE.MeshNormalMaterial(); var helperTxt = new THREE.Mesh(geometry, material); helperTxt.position.x = 0; helperTxt.position.y = 2.5; helperTxt.position.z = 0; scene.add(helperTxt); });
+    helperloader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font) { var geometry = new THREE.TextGeometry('Z', { font: font, size: 0.2, height: 0.1, }); var material = new THREE.MeshNormalMaterial(); var helperTxt = new THREE.Mesh(geometry, material); helperTxt.position.x = 0; helperTxt.position.y = 0; helperTxt.position.z = 2.5; scene.add(helperTxt); });
 
     var dir = new THREE.Vector3(0, 1, 0);
     dir.normalize();

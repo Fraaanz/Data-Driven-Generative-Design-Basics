@@ -59,10 +59,10 @@ d3.json("../sources/demo-data/weather.json").then(function (data) {
       var air_temperature = data.properties.timeseries[i].data.instant.details.air_temperature;
       var wind_speed = data.properties.timeseries[i].data.instant.details.wind_speed;
       var dew_point_temperature = data.properties.timeseries[i].data.instant.details.dew_point_temperature;
-      
-      var sphereSize = wind_speed/2;
-      var torusArc = air_temperature/5;
-      var torusThickness = 0.15 + -dew_point_temperature/10;
+
+      var sphereSize = wind_speed / 2;
+      var torusArc = air_temperature / 5;
+      var torusThickness = 0.15 + -dew_point_temperature / 10;
 
       var geometry = new THREE.TorusGeometry(1, torusThickness, 30, 100, torusArc);
       var material = new THREE.MeshPhysicalMaterial({
@@ -104,7 +104,7 @@ d3.json("../sources/demo-data/weather.json").then(function (data) {
       mesh.position.z = 0;
       groupedObjectsA.add(mesh);
 
-      var geometry = new THREE.SphereGeometry(sphereSize, 32, 32 );
+      var geometry = new THREE.SphereGeometry(sphereSize, 32, 32);
       var material = new THREE.MeshPhysicalMaterial({
         color: "#EE44AA",
         reflectivity: 1,
@@ -131,8 +131,8 @@ d3.json("../sources/demo-data/weather.json").then(function (data) {
       }
     }
 
-    groupedObjectsA.position.x = -positionXmax/2;
-    groupedObjectsA.position.y = -positionY/2;
+    groupedObjectsA.position.x = -positionXmax / 2;
+    groupedObjectsA.position.y = -positionY / 2;
 
     // 🌞 LIGHT SETTINGS -------------------------- 
 
@@ -190,9 +190,9 @@ d3.json("../sources/demo-data/weather.json").then(function (data) {
     lat = Math.max(- 85, Math.min(85, lat));
     phi = THREE.MathUtils.degToRad(90 - lat);
     theta = THREE.MathUtils.degToRad(lon);
-    camera.position.x = 10 * Math.sin(phi) * Math.cos(theta) +5;
+    camera.position.x = 10 * Math.sin(phi) * Math.cos(theta) + 5;
     camera.position.y = 10 * Math.cos(phi) + 3;
-    camera.position.z = 10 * Math.sin(phi) * Math.sin(theta) +3;
+    camera.position.z = 10 * Math.sin(phi) * Math.sin(theta) + 3;
     camera.lookAt(scene.position);
 
     renderer.render(scene, camera);
@@ -238,7 +238,8 @@ d3.json("../sources/demo-data/weather.json").then(function (data) {
 
     var helperObj, geometry, material;
     var helperObjSize = 0.1;
-    var helperSize = 2;
+    var helperSize = 3;
+    var helperloader = new THREE.FontLoader();
 
     geometry = new THREE.BoxGeometry(helperObjSize, helperObjSize, helperObjSize); material = new THREE.MeshNormalMaterial(); helperObj = new THREE.Mesh(geometry, material);
     helperObj.position.x = 0; helperObj.position.y = 0; helperObj.position.z = 0; scene.add(helperObj);
@@ -258,6 +259,10 @@ d3.json("../sources/demo-data/weather.json").then(function (data) {
     helperObj.position.x = -helperSize; helperObj.position.y = helperSize; helperObj.position.z = -helperSize; scene.add(helperObj);
     geometry = new THREE.BoxGeometry(helperObjSize, helperObjSize, helperObjSize); material = new THREE.MeshNormalMaterial(); helperObj = new THREE.Mesh(geometry, material);
     helperObj.position.x = -helperSize; helperObj.position.y = -helperSize; helperObj.position.z = -helperSize; scene.add(helperObj);
+
+    helperloader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font) { var geometry = new THREE.TextGeometry('X', { font: font, size: 0.2, height: 0.1, }); var material = new THREE.MeshNormalMaterial(); var helperTxt = new THREE.Mesh(geometry, material); helperTxt.position.x = 2.5; helperTxt.position.y = 0; helperTxt.position.z = 0; scene.add(helperTxt); });
+    helperloader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font) { var geometry = new THREE.TextGeometry('Y', { font: font, size: 0.2, height: 0.1, }); var material = new THREE.MeshNormalMaterial(); var helperTxt = new THREE.Mesh(geometry, material); helperTxt.position.x = 0; helperTxt.position.y = 2.5; helperTxt.position.z = 0; scene.add(helperTxt); });
+    helperloader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font) { var geometry = new THREE.TextGeometry('Z', { font: font, size: 0.2, height: 0.1, }); var material = new THREE.MeshNormalMaterial(); var helperTxt = new THREE.Mesh(geometry, material); helperTxt.position.x = 0; helperTxt.position.y = 0; helperTxt.position.z = 2.5; scene.add(helperTxt); });
 
     var dir = new THREE.Vector3(0, 1, 0);
     dir.normalize();

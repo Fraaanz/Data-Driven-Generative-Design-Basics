@@ -15,7 +15,7 @@ Here you will find code example and informations how to get started with ThreeJS
 
 **⚠️ Use Google Chrome (or a similiar Chrome browser) for this Project!**
 
-### Download and install the software in this order:
+### 👇 Download and install the software in this order:
 
 1. [Visual Studio Code (VS Code)](https://code.visualstudio.com) (install first)
 
@@ -25,7 +25,7 @@ Here you will find code example and informations how to get started with ThreeJS
 
 4. tbc ...
 
-### Test (some days before) if everything works for the workshop:
+### 💁‍♀️ Test (some days before) if everything works for the workshop:
 
 1. Run VS Code
 2. Open the project folder "Data-Driven-Generative-Design-Basics" with VS Code (File > Open > and choose the folder you have downloaded)

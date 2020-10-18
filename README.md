@@ -21,7 +21,9 @@ Here you will find code example and informations how to get started with ThreeJS
 
 2. Live server plug-in for VS Code [Live Server by Ritwick Dey](https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer)
 
-3. [Download this "Data-Driven-Generative-Design-Basics" fiels](https://github.com/Fraaanz/Data-Driven-Generative-Design-Basics/archive/master.zip)
+3. Plug-in to preview and edit csv files [Edit csv by janisdd](https://marketplace.visualstudio.com/items?itemName=janisdd.vscode-edit-csv)
+
+4. [Download this "Data-Driven-Generative-Design-Basics" fiels](https://github.com/Fraaanz/Data-Driven-Generative-Design-Basics/archive/master.zip)
 
 
 ### 💁‍♀️ Test (some days before) if everything works for the workshop:

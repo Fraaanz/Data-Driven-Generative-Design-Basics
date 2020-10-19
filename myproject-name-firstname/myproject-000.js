@@ -58,12 +58,11 @@ d3.csv("../sources/demo-data/dwd-demo-data-small.csv").then(function (data) {
     // 🌞 LIGHT SETTINGS -------------------------- 
 
     var lightA;
-    lightA = new THREE.SpotLight(0xFFFFAA, 1);
-    lightA.position.set(-15, 15, 15);
+    lightA = new THREE.HemisphereLight(0xFFFFFF, 1);
 
     var lightB;
-    lightB = new THREE.SpotLight(0xAAFFFF, 1);
-    lightB.position.set(15, -15, 15);
+    lightB = new THREE.SpotLight(0xFFFFFF, 20);
+    lightB.position.set(30, 100, 50);
 
     // 👉 🌇 MAKE IT VISIBLE -------------------------- 
 

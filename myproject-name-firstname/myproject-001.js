@@ -57,7 +57,7 @@ d3.csv("../sources/demo-data/dwd-demo-data-small.csv").then(function (data) {
       color: "#0022FF", 
       side: THREE.DoubleSide,
       transmission: 0,
-      opacity: 0.5,
+      opacity: 1,
       transparent: true
     });
     var mesh = new THREE.Mesh(geometry, material);

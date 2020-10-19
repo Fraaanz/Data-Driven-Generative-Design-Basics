@@ -36,7 +36,11 @@ fetch('../sources/demo-data/demotext.txt').then(function (response) {
 
       // 🎥 CAM SETTING -------------------------- 
 
-      camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 110);
+      var fov = 70;
+      var aspect = window.innerWidth / window.innerHeight;
+      var near = 0.01;
+      var far = 100;
+      camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
       camera.position.z = 5;
 
       // 🌇 SCENE SETTING -------------------------- 

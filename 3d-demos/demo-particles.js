@@ -24,7 +24,11 @@ function init() {
 
   // 🎥 CAM SETTING -------------------------- 
 
-  camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 110);
+  var fov = 70;
+  var aspect = window.innerWidth / window.innerHeight;
+  var near = 0.01;
+  var far = 100;
+  camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
   camera.position.z = 5;
 
   // 🌇 SCENE SETTING -------------------------- 
@@ -53,7 +57,7 @@ function init() {
 
   var n = 1000, n2 = n / 2; // particles spread in the cube
 
-  for ( var i = 0; i < particles; i ++ ) {
+  for (var i = 0; i < particles; i++) {
 
     // positions
 
@@ -61,30 +65,30 @@ function init() {
     var y = (Math.random() * n - n2);
     var z = (Math.random() * n - n2);
 
-    positions.push( x/50, y/50, z/50);
+    positions.push(x / 50, y / 50, z / 50);
 
     // colors
 
-    var vx = ( x / n ) + 0.5;
-    var vy = ( y / n ) + 0.5;
-    var vz = ( z / n ) + 0.5;
+    var vx = (x / n) + 0.5;
+    var vy = (y / n) + 0.5;
+    var vz = (z / n) + 0.5;
 
-    color.setRGB( vx, vy, vz );
+    color.setRGB(vx, vy, vz);
 
-    colors.push( color.r, color.g, color.b );
+    colors.push(color.r, color.g, color.b);
 
   }
 
-  geometry.setAttribute( 'position', new THREE.Float32BufferAttribute( positions, 3 ) );
-  geometry.setAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
 
   geometry.computeBoundingSphere();
-  
 
-  var material = new THREE.PointsMaterial( { size: 0.02, vertexColors: true } );
 
-  points = new THREE.Points( geometry, material );
-  scene.add( points );
+  var material = new THREE.PointsMaterial({ size: 0.02, vertexColors: true });
+
+  points = new THREE.Points(geometry, material);
+  scene.add(points);
 
 
   // 🌞 LIGHT SETTINGS -------------------------- 
@@ -192,10 +196,10 @@ function helper() {
   helperObj.position.x = -helperSize; helperObj.position.y = helperSize; helperObj.position.z = -helperSize; scene.add(helperObj);
   geometry = new THREE.BoxGeometry(helperObjSize, helperObjSize, helperObjSize); material = new THREE.MeshNormalMaterial(); helperObj = new THREE.Mesh(geometry, material);
   helperObj.position.x = -helperSize; helperObj.position.y = -helperSize; helperObj.position.z = -helperSize; scene.add(helperObj);
-  
-  helperloader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font) { var geometry = new THREE.TextGeometry('X', {font: font, size: 0.2, height: 0.1, }); var material = new THREE.MeshNormalMaterial(); var helperTxt = new THREE.Mesh(geometry, material); helperTxt.position.x = 2.5; helperTxt.position.y = 0; helperTxt.position.z = 0; scene.add(helperTxt); });
-  helperloader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font) { var geometry = new THREE.TextGeometry('Y', {font: font, size: 0.2, height: 0.1, }); var material = new THREE.MeshNormalMaterial(); var helperTxt = new THREE.Mesh(geometry, material); helperTxt.position.x = 0; helperTxt.position.y = 2.5; helperTxt.position.z = 0; scene.add(helperTxt); });
-  helperloader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font) { var geometry = new THREE.TextGeometry('Z', {font: font, size: 0.2, height: 0.1, }); var material = new THREE.MeshNormalMaterial(); var helperTxt = new THREE.Mesh(geometry, material); helperTxt.position.x = 0; helperTxt.position.y = 0; helperTxt.position.z = 2.5; scene.add(helperTxt); });
+
+  helperloader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font) { var geometry = new THREE.TextGeometry('X', { font: font, size: 0.2, height: 0.1, }); var material = new THREE.MeshNormalMaterial(); var helperTxt = new THREE.Mesh(geometry, material); helperTxt.position.x = 2.5; helperTxt.position.y = 0; helperTxt.position.z = 0; scene.add(helperTxt); });
+  helperloader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font) { var geometry = new THREE.TextGeometry('Y', { font: font, size: 0.2, height: 0.1, }); var material = new THREE.MeshNormalMaterial(); var helperTxt = new THREE.Mesh(geometry, material); helperTxt.position.x = 0; helperTxt.position.y = 2.5; helperTxt.position.z = 0; scene.add(helperTxt); });
+  helperloader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font) { var geometry = new THREE.TextGeometry('Z', { font: font, size: 0.2, height: 0.1, }); var material = new THREE.MeshNormalMaterial(); var helperTxt = new THREE.Mesh(geometry, material); helperTxt.position.x = 0; helperTxt.position.y = 0; helperTxt.position.z = 2.5; scene.add(helperTxt); });
 
   var dir = new THREE.Vector3(0, 1, 0);
   dir.normalize();

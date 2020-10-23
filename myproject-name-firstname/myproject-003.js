@@ -53,10 +53,10 @@ d3.csv("../sources/demo-data/dwd-demo-data-small.csv").then(function (data) {
     // 👇 YOUR 3D OBJECTS ✅ ----------------------- 
 
     for (var i = 0; i <= 9; i++) {
+      var cubePosX = data[i]["LON"] - 10;
       var cubePosY = data[i]["LAT"] - 50;
-      var cubePosZ = data[i]["LON"] - 10;
 
-      console.log("🎯 lat & long:" + cubePosY + " " + cubePosZ);
+      console.log("🎯 lat & long:" + cubePosY + " " + cubePosX);
 
       var geometry = new THREE.BoxGeometry(1, 1, 1);
       var material = new THREE.MeshPhysicalMaterial({
@@ -67,9 +67,9 @@ d3.csv("../sources/demo-data/dwd-demo-data-small.csv").then(function (data) {
         transparent: true
       });
       var mesh = new THREE.Mesh(geometry, material);
-      mesh.position.x = 0;
+      mesh.position.x = cubePosX;
       mesh.position.y = cubePosY;
-      mesh.position.z = cubePosZ;
+      mesh.position.z = 0;
       groupedObjectsA.add(mesh);
     }
 
@@ -111,10 +111,10 @@ d3.csv("../sources/demo-data/dwd-demo-data-small.csv").then(function (data) {
     // MOUSE 
     lat = Math.max(- 85, Math.min(85, lat));
     phi = THREE.MathUtils.degToRad(90 - lat);
-    theta = THREE.MathUtils.degToRad(lon);
-    camera.position.x = 10 * Math.sin(phi) * Math.cos(theta);
+    theta = THREE.MathUtils.degToRad(-lon);
+    camera.position.z = 10 * Math.sin(phi) * Math.cos(theta);
     camera.position.y = 10 * Math.cos(phi);
-    camera.position.z = 10 * Math.sin(phi) * Math.sin(theta);
+    camera.position.x = 10 * Math.sin(phi) * Math.sin(theta);
     camera.lookAt(scene.position);
 
     renderer.render(scene, camera);

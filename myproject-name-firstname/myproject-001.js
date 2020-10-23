@@ -104,10 +104,10 @@ d3.csv("../sources/demo-data/dwd-demo-data-small.csv").then(function (data) {
     // MOUSE 
     lat = Math.max(- 85, Math.min(85, lat));
     phi = THREE.MathUtils.degToRad(90 - lat);
-    theta = THREE.MathUtils.degToRad(lon);
-    camera.position.x = 10 * Math.sin(phi) * Math.cos(theta);
+    theta = THREE.MathUtils.degToRad(-lon);
+    camera.position.z = 10 * Math.sin(phi) * Math.cos(theta);
     camera.position.y = 10 * Math.cos(phi);
-    camera.position.z = 10 * Math.sin(phi) * Math.sin(theta);
+    camera.position.x = 10 * Math.sin(phi) * Math.sin(theta);
     camera.lookAt(scene.position);
 
     renderer.render(scene, camera);

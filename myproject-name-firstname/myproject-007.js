@@ -8,7 +8,7 @@ import * as THREE from '../sources/three.module.js';
 d3.csv("../sources/demo-data/dwd-demo-data-small.csv").then(function (data) {
 
   // Display table in console
-  console.table(data);;
+  // console.table(data);;
 
   // 🌐 GLOBAL VARIABLES -------------------------- 
 
@@ -52,8 +52,28 @@ d3.csv("../sources/demo-data/dwd-demo-data-small.csv").then(function (data) {
 
     // 👇 YOUR 3D OBJECTS ✅ ----------------------- 
 
+    for (var i = 0; i <= 500; i++) {
+      var cubePosX = data[i]["LON"] - 10;
+      var cubePosY = (data[i]["LAT"] * 1.4) - 71.5;
+      var cubePosZ = data[i]["ALTITUDE"] / 500;
 
+      // console.log("🎯 lat & long:" + cubePosY + " " + cubePosZ);
+      console.log("⛰ altitude: " + cubePosZ);
 
+      var geometry = new THREE.BoxGeometry(0.1, 0.1, cubePosZ * 2);
+      var material = new THREE.MeshPhysicalMaterial({
+        color: "#0022FF",
+        side: THREE.DoubleSide,
+        transmission: 0,
+        opacity: 1,
+        transparent: true
+      });
+      var mesh = new THREE.Mesh(geometry, material);
+      mesh.position.x = cubePosX;
+      mesh.position.y = cubePosY;
+      mesh.position.z = cubePosZ;
+      groupedObjectsA.add(mesh);
+    }
 
     // 🌞 LIGHT SETTINGS -------------------------- 
 

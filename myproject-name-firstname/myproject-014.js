@@ -8,7 +8,7 @@ import * as THREE from '../sources/three.module.js';
 d3.csv("../sources/demo-data/dwd-demo-data-small.csv").then(function (data) {
 
   // Display table in console
-  console.table(data);;
+  // console.table(data);;
 
   // 🌐 GLOBAL VARIABLES -------------------------- 
 
@@ -43,17 +43,45 @@ d3.csv("../sources/demo-data/dwd-demo-data-small.csv").then(function (data) {
     // 🌇 SCENE SETTING -------------------------- 
 
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xFFFFFF);
-    scene.fog = new THREE.Fog(0x000000, 5, 25);
+    scene.background = new THREE.Color(0x000000);
+    scene.fog = new THREE.Fog(0x000000, 5, 15);
 
     // 🔶 HELPER CUBES ✅ ----------------------- 
 
-    helper();
+    // helper();
 
     // 👇 YOUR 3D OBJECTS ✅ ----------------------- 
 
+    for (var i = 0; i <= 250; i++) {
+      // var cubePosX = data[i]["ALTITUDE"]/1000;
+      var cubePosX = data[i]["LON"] - 10;
+      var cubePosY = (data[i]["LAT"] * 1.4) - 71.5;
+      var cubePosZ = data[i]["TEMP"] - 9;
+      var colorS = Math.round(data[i]["TEMP"] * 5);
+      var cubeSize = (data[i]["RAIN"] - 442) / 500;
 
+      // console.log("🎯 lat & long:" + cubePosY + " " + cubePosZ);
+      // console.log("⛰ altitude: " + cubePosX);
+      // console.log("🌡 max temp: " + cubePosX);
+      console.log("cubePosZ: " + cubePosZ);
+      console.log("colorS: " + colorS);
 
+      var geometry = new THREE.TorusGeometry(cubeSize, cubePosZ / 50, 50, 50, 7);
+      var material = new THREE.MeshPhysicalMaterial({
+        color: "hsl(240, 100% , " + colorS + "%)",//hsl(hue, saturation, lightness)
+        side: THREE.DoubleSide,
+        transmission: 0,
+        opacity: 1,
+        transparent: true
+      });
+      var mesh = new THREE.Mesh(geometry, material);
+      mesh.position.x = cubePosX;
+      mesh.position.y = cubePosY;
+      mesh.position.z = cubePosZ;
+      mesh.name = 'mesh' + i;
+      console.log('NAME: ' + mesh.name);
+      groupedObjectsA.add(mesh);
+    }
 
     // 🌞 LIGHT SETTINGS -------------------------- 
 
@@ -99,6 +127,11 @@ d3.csv("../sources/demo-data/dwd-demo-data-small.csv").then(function (data) {
     camera.position.x = 10 * Math.sin(phi) * Math.sin(theta);
     camera.lookAt(scene.position);
 
+    for (var i = 0; i <= 250; i++) {
+      var object = scene.getObjectByName('mesh' + i);
+      rotateObject(object, Math.sin(i * 0.3), Math.cos(i * 0.2), 0);
+    };
+
     renderer.render(scene, camera);
   }
 
@@ -134,6 +167,14 @@ d3.csv("../sources/demo-data/dwd-demo-data-small.csv").then(function (data) {
     var fov = camera.fov + event.deltaY * 0.05;
     camera.fov = THREE.MathUtils.clamp(fov, 10, 75);
     camera.updateProjectionMatrix();
+  }
+
+  // 🔄 Rotation funktion --------------------
+
+  function rotateObject(object, degreeX = 0, degreeY = 0, degreeZ = 0) {
+    object.rotateX(THREE.Math.degToRad(degreeX));
+    object.rotateY(THREE.Math.degToRad(degreeY));
+    object.rotateZ(THREE.Math.degToRad(degreeZ));
   }
 
   // 🔶 These cubes help you to get an orientation in space -------------------------- 

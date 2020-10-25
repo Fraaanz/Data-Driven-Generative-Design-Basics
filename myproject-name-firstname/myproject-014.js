@@ -43,8 +43,8 @@ d3.csv("../sources/demo-data/dwd-demo-data-small.csv").then(function (data) {
     // 🌇 SCENE SETTING -------------------------- 
 
     scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x000000);
-    scene.fog = new THREE.Fog(0x000000, 5, 15);
+    scene.background = new THREE.Color(0xFFFFFF);
+    scene.fog = new THREE.Fog(0xFFFFFF, 5, 15);
 
     // 🔶 HELPER CUBES ✅ ----------------------- 
 
@@ -57,20 +57,26 @@ d3.csv("../sources/demo-data/dwd-demo-data-small.csv").then(function (data) {
       var cubePosX = data[i]["LON"] - 10;
       var cubePosY = (data[i]["LAT"] * 1.4) - 71.5;
       var cubePosZ = data[i]["TEMP"] - 9;
-      var colorS = Math.round(data[i]["TEMP"] * 5);
+      //var colorS = Math.round(data[i]["TEMP"] * 5);
       var cubeSize = (data[i]["RAIN"] - 442) / 500;
 
       // console.log("🎯 lat & long:" + cubePosY + " " + cubePosZ);
       // console.log("⛰ altitude: " + cubePosX);
       // console.log("🌡 max temp: " + cubePosX);
-      console.log("cubePosZ: " + cubePosZ);
-      console.log("colorS: " + colorS);
+      // console.log("cubePosZ: " + cubePosZ);
+      // console.log("colorS: " + colorS);
 
-      var geometry = new THREE.TorusGeometry(cubeSize, cubePosZ / 50, 50, 50, 7);
+      var geometry = new THREE.TorusGeometry(cubeSize, cubePosZ / 50, 50, 50, 6.29);
       var material = new THREE.MeshPhysicalMaterial({
-        color: "hsl(240, 100% , " + colorS + "%)",//hsl(hue, saturation, lightness)
-        side: THREE.DoubleSide,
-        transmission: 0,
+        color: "hsl(0, 0% , 100%)",//hsl(hue, saturation, lightness)
+        reflectivity: 1,
+        refractionRatio: 1,
+        roughness: 0,
+        metalness: 0,
+        clearcoat: 1,
+        //side: THREE.DoubleSide,
+        clearcoatRoughness: 0,
+        transmission: 0.2,
         opacity: 1,
         transparent: true
       });
@@ -85,21 +91,34 @@ d3.csv("../sources/demo-data/dwd-demo-data-small.csv").then(function (data) {
 
     // 🌞 LIGHT SETTINGS -------------------------- 
 
-    var lightA;
-    lightA = new THREE.HemisphereLight(0xFFFFFF, 1);
+    var light = new THREE.PointLight(0xFFFFFF, 1, 2000);
+    light.position.set(0, 0, 210);
+    scene.add(light);
 
-    var lightB;
-    lightB = new THREE.SpotLight(0xFFFFFF, 20);
-    lightB.position.set(30, 100, 50);
+    var light = new THREE.PointLight(0xff9933, 2, 2000);
+    light.position.set(0, -211, 50);
+    scene.add(light);
+
+    var light = new THREE.PointLight(0xff0077, 2, 2000);
+    light.position.set(-211, 0, 50);
+    scene.add(light);
+
+    var light = new THREE.PointLight(0x33ffff, 1, 2000);
+    light.position.set(0, 211, 50);
+    scene.add(light);
+
+    var light = new THREE.PointLight(0x3399ff, 1, 2000);
+    light.position.set(211, 0, 50);
+    scene.add(light);
 
     // 👉 🌇 MAKE IT VISIBLE -------------------------- 
 
-    scene.add(groupedObjectsA, lightA, lightB);
+    scene.add(groupedObjectsA);
 
     // 🎛 RENDER SETTINGS -------------------------- 
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setPixelRatio(window.devicePixelRatio / 1);
+    renderer.setPixelRatio(window.devicePixelRatio / 2);
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.toneMapping = THREE.ReinhardToneMapping;
     renderer.toneMappingExposure = 2.3;

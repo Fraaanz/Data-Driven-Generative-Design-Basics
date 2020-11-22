@@ -20,7 +20,7 @@ loader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font)
     var onPointerDownPointerX, onPointerDownPointerY, onPointerDownLon, onPointerDownLat;
     var lon = 0, lat = 0;
     var phi = 0, theta = 0;
-
+    
     var startRow = 90;
     var numberOfObjects = startRow + 50;
 
@@ -64,21 +64,46 @@ loader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font)
         console.log("😷 Object No: " + i + " of " + numberOfObjects + " --------------------");
 
         // load date from table
-        // var demoValue = data[i]["VALUEXYZ"];
+        var lonX = data[i]["LON"] - 10 + Math.random();
+        var latY = (data[i]["LAT"] * 1.4) - 70;
+        var temp = data[i]["TEMP"] - 9;
+        var maxtemp = data[i]["MAXTEMP"];
+        var colorL = Math.round(data[i]["TEMP"] * 10);
+        var rain = (data[i]["RAIN"] - 442) / 200;
+        var altitude = (data[i]["ALTITUDE"] / 300);
+        var cloud = data[i]["CLOUD"];
 
         // remove invalid values from data
-        // if (demoValue == "" || demoValue == "NULL") {
-        //  demoValue = "0";
-        // } 
+        if (maxtemp == "" || maxtemp == "NULL") {
+          maxtemp = "0";
+        }
+        if (cloud == "" || cloud == "NULL") {
+          cloud = "0";
+        }
+
+        // some random values 
+        var randomValue = Math.random() / 2;
+        var randomValue2 = Math.random() * 360;
+        var randomValue3 = Math.random() * 2;
 
         // display values in console
-        // console.log("demoValue: " + demoValue);
+        console.log("lonX: " + lonX);
+        console.log("latY " + latY);
+        console.log("temp: " + temp);
+        console.log("maxtemp: " + maxtemp);
+        console.log("colorL: " + colorL);
+        console.log("rain: " + rain);
+        console.log("altitude: " + altitude);
+        console.log("cloud: " + cloud);
+        console.log("randomValue: " + randomValue);
+        console.log("randomValue2: " + randomValue2);
+        console.log("randomValue3: " + randomValue3);
 
         // 3D Object start
 
-        var geometry = new THREE.BoxGeometry(3, 3, 3);
+        var geometry = new THREE.TorusGeometry(rain, randomValue, 50, 50, altitude);
         var material = new THREE.MeshPhysicalMaterial({
-          color: "hsl(280, 100% , 80%)", //hsl(hue, saturation, lightness)
+          color: "hsl(" + randomValue2 + ", 100% , " + colorL + "%)",//hsl(hue, saturation, lightness)
           reflectivity: 1,
           refractionRatio: 1,
           clearcoat: 1,
@@ -88,9 +113,9 @@ loader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font)
           transparent: true
         });
         var mesh = new THREE.Mesh(geometry, material);
-        mesh.position.x = 0;
-        mesh.position.y = 0;
-        mesh.position.z = 0;
+        mesh.position.x = lonX;
+        mesh.position.y = latY;
+        mesh.position.z = temp;
         mesh.name = 'mesh' + i;
         console.log('NAME: ' + mesh.name);
         groupedObjectsA.add(mesh);
@@ -104,8 +129,18 @@ loader.load('../sources/fonts/helvetiker_regular.typeface.json', function (font)
 
       // HemisphereLight(skyColor: any, groundColor: any, intensity: any)
       var light;
-      light = new THREE.HemisphereLight(0xFFFFFF, 0x0000FF, 1);
+      light = new THREE.HemisphereLight(0xFFFFFF, 0x0000FF, 0.1);
       scene.add(light);
+
+      // PointLight(color: any, intensity: any, distance: any, decay: any)
+      var light = new THREE.PointLight(0xFFFFFF, 20, 10);
+      light.position.set(0, 100, -210);
+      scene.add(light);
+
+      // SpotLight(color: any, intensity: any, distance: any, angle: any, penumbra: any, decay: any)
+      var spotLight = new THREE.SpotLight(0xFFFFFF, 2, 100, 0.3, 0.5, 2);
+      spotLight.position.set(0, 3, 10);
+      scene.add(spotLight);
 
       // 👉 🌇 MAKE IT VISIBLE -------------------------- 
 

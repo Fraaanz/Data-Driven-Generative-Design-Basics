@@ -1,6 +1,6 @@
 # My Project name
 
-## Kurs: Technologien 1, Generatives Design
+## Kurs: Technologien 2, Generatives Design
 
 Maria Musterfrau
 meineEmailAdresse@htw-berlin.de
